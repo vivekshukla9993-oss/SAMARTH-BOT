@@ -21,7 +21,7 @@ college_rules = """
 """
 
 # 3. जेमिनी मॉडल को नियम सिखाना
-model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=college_rules)
+model = genai.GenerativeModel('gemini-3.8-flash', system_instruction=college_rules)
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = model.start_chat(history=[])
