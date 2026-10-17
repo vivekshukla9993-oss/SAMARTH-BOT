@@ -53,7 +53,10 @@ with st.sidebar:
                 try:
                     # CSV file ko padhna
                     df = pd.read_csv("students.csv")
-                    
+                   
+                    # Heaadings ke aas-paas ke extra spaces ko hatane ke liye yeh nayi line jodein:
+                    df.columns = df.columns.str.strip() 
+                                       
                     # Naam aur Mobile match karna (chote-bade aksharon ka dhyan na rakhte hue)
                     df['Name'] = df['Name'].astype(str).str.strip().str.lower()
                     df['Mobile'] = df['Mobile'].astype(str).str.strip()
