@@ -52,7 +52,7 @@ with st.sidebar:
             if student_name and student_mobile:
                 try:
                     # CSV file ko padhna
-                   df = pd.read_csv("students.csv")
+                    df = pd.read_csv("students.csv")
                     
                     # Headings ke extra space hatana
                     df.columns = df.columns.str.strip()
