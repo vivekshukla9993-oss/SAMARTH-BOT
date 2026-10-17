@@ -1,44 +1,79 @@
 import streamlit as st
 import google.generativeai as genai
 
-# 1. पेज का नया डिज़ाइन (छात्रों के लिए)
-st.set_page_config(page_title="समर्थ पोर्टल हेल्पर", page_icon="🎓", layout="centered")
+# 1. पेज का सेटअप और थीम
+st.set_page_config(page_title="कॉलेज हेल्पडेस्क", page_icon="🎓", layout="wide")
 
+# 2. कस्टम डिज़ाइन और कलर (CSS) - आप यहाँ कलर बदल सकते हैं
+st.markdown("""
+<style>
+    /* बैकग्राउंड का रंग (हल्का नीला) */
+    .stApp {
+        background-color: #f0f8ff; 
+    }
+    /* हेडिंग का रंग (गहरा नीला) */
+    h1, h2, h3 {
+        color: #000080; 
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# 3. बायीं तरफ का साइडबार (Logo, Links, Notices, Video)
+with st.sidebar:
+    # कॉलेज का लोगो (यहाँ अपने लोगो का वेब लिंक डालें)
+    st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTajyaMtBCOPtpQt4MXPMbhAfstcgeh6F5ALRF_YKRF_w&s=10", width=150)
+    
+    st.title("📌 ज़रूरी जानकारी")
+    
+    # समर्थ पोर्टल का लिंक
+    st.subheader("🌐 पोर्टल लिंक")
+    st.markdown("[👉 यहाँ क्लिक करके समर्थ पोर्टल खोलें](https://sanskrit.samarth.edu.in/index.php/abc/app/index)")
+    
+    # नोटिस बोर्ड
+    st.subheader("📢 नोटिस बोर्ड")
+    st.info("""
+    **एग्जाम फॉर्म:** 15 अक्टू. - 30 अक्टू.\n
+    **टाइम टेबल:** 5 नवंबर को आएगा\n
+    **एडमिट कार्ड:** 10 नवंबर से डाउनलोड करें
+    """)
+    
+    # वीडियो ट्यूटोरियल
+    st.subheader("📺 ट्यूटोरियल वीडियो")
+    st.write("फीस कैसे भरें? नीचे वीडियो देखें:")
+    # यहाँ अपने YouTube या स्क्रीन रिकॉर्डिंग का लिंक डालें
+    st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ") 
+
+# 4. API Key और मॉडल सेटअप
 API_KEY = st.secrets["GOOGLE_API_KEY"]
 genai.configure(api_key=API_KEY)
 
-# 2. बॉट का दिमाग और नियम (System Instructions) - यहाँ अपनी असली जानकारी भरें!
-college_rules = """
-तुम एक बहुत ही मददगार और नम्र कॉलेज असिस्टेंट हो। तुम्हारा नाम 'समर्थ हेल्पर बॉट' है। 
-तुम्हारा काम छात्रों की 'Samarth Portal' से जुड़ी समस्याओं (Fees, Exam Form, Course Selection) को हल करना है।
-
-तुम्हारे लिए कुछ नियम और जानकारी:
-1. Fees (फीस): अगर छात्र CSU की फीस के बारे में पूछे, तो उन्हें बताओ कि समर्थ पोर्टल पर लॉगिन करके 'Fee' सेक्शन में जाएं। (यहाँ अपनी फीस की लिंक या असली प्रोसेस लिखें)
-2. Exam Form (परीक्षा फॉर्म): एग्जाम फॉर्म भरने के लिए 'Examination' टैब पर क्लिक करना होता है। (यहाँ फॉर्म की तारीख या ज़रूरी डॉक्यूमेंट्स लिखें)
-3. Course Selection (विषय चुनना): कोर्स सेलेक्ट करने के लिए 'Academics' सेक्शन में जाएं।
-4. अगर कोई छात्र ऐसा सवाल पूछे जो पोर्टल या पढ़ाई से जुड़ा नहीं है (जैसे- आज का मौसम, चुटकुले, या राजनीति), तो विनम्रता से मना कर दो और कहो: "मैं केवल समर्थ पोर्टल और कॉलेज से जुड़ी जानकारी देने के लिए बना हूँ।"
-5. जवाब हमेशा आसान भाषा में (हिंदी या हिंगलिश) पॉइंट्स में दो।
+# 5. बॉट का दिमाग (System Instructions)
+college_rules = "श्री भगवानदास आदर्श संस्कृत महाविद्यालय -chatbot ""
+यह एक बहुत ही मददगार कॉलेज असिस्टेंट है, इसका काम छात्रों की 'Samarth Portal' से जुड़ी समस्याओं को हल करना है।
+नियम:
+1. अगर कोई फीस, एग्जाम फॉर्म या कोर्स सिलेक्शन का पूछे, तो यह स्टेप्स बताता है|
+2. छात्रों को यह भी बताता है कि "ज़रूरी लिंक्स, आखिरी तारीखें और मदद के लिए वीडियो बायीं तरफ (Sidebar) में दिए गए हैं, आप उन्हें देख सकते हैं।"
+3.
 """
 
-# 3. जेमिनी मॉडल को नियम सिखाना
 model = genai.GenerativeModel('gemini-3.8-flash', system_instruction=college_rules)
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = model.start_chat(history=[])
 
-# 4. वेबसाइट का हेडर
-st.title("🎓 समर्थ पोर्टल हेल्पर")
-st.caption("फीस, एग्जाम फॉर्म या कोर्स सिलेक्शन से जुड़ा अपना सवाल पूछें 👇")
+# 6. मुख्य चैट स्क्रीन
+st.title("🎓 Shri Bhagwandas Adarsh Sanskrit Mahavidyalaya - समर्थ पोर्टल हेल्पर")
+st.caption("पोर्टल से जुड़ी कोई भी समस्या यहाँ पूछें 👇")
 st.divider()
 
-# 5. पुरानी चैट दिखाना
+# पुरानी चैट दिखाना
 for message in st.session_state.chat_history.history:
     role = "user" if message.role == "user" else "assistant"
     with st.chat_message(role):
         st.markdown(message.parts[0].text)
 
-# 6. नया सवाल पूछना
-user_input = st.chat_input("अपना सवाल यहाँ टाइप करें (जैसे: एग्जाम फॉर्म कैसे भरें?)...")
+# नया सवाल पूछना
+user_input = st.chat_input("अपना सवाल यहाँ टाइप करें...")
 
 if user_input:
     with st.chat_message("user"):
