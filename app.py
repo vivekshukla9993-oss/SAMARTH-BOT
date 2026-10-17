@@ -59,7 +59,7 @@ with st.sidebar:
                     
                     # Aapki list ki headings (NAME, MOBILE) ke anusar match karna
                     df['NAME'] = df['NAME'].astype(str).str.strip().str.lower()
-                    df['MOBILE'] = df['MOBILE'].astype(str).str.strip()
+                    df['MOBILE'] = df['MOBILE'].astype(str).str.split('.').str[0].str.strip()
                     
                     match = df[(df['NAME'] == student_name.strip().lower()) & 
                                (df['MOBILE'] == student_mobile.strip())]
