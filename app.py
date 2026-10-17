@@ -1,6 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
-
+import pandas as pd
 # 1. पेज का सेटअप और थीम
 st.set_page_config(page_title="कॉलेज हेल्पडेस्क", page_icon="🎓", layout="wide")
 
@@ -42,6 +42,35 @@ with st.sidebar:
     st.write("फीस कैसे भरें? नीचे वीडियो देखें:")
     # यहाँ अपने YouTube या स्क्रीन रिकॉर्डिंग का लिंक डालें
     st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ") 
+    # for enrollement number
+    st.subheader("🔍 अपना Enrollment/Roll No. जानें")
+    with st.expander("यहाँ क्लिक करें"):
+        student_name = st.text_input("अपना पूरा नाम लिखें:")
+        student_mobile = st.text_input("अपना मोबाइल नंबर डालें:")
+        
+        if st.button("सर्च करें"):
+            if student_name and student_mobile:
+                try:
+                    # CSV file ko padhna
+                    df = pd.read_csv("students.csv")
+                    
+                    # Naam aur Mobile match karna (chote-bade aksharon ka dhyan na rakhte hue)
+                    df['Name'] = df['Name'].astype(str).str.strip().str.lower()
+                    df['Mobile'] = df['Mobile'].astype(str).str.strip()
+                    
+                    match = df[(df['Name'] == student_name.strip().lower()) & 
+                               (df['Mobile'] == student_mobile.strip())]
+                    
+                    if not match.empty:
+                        st.success("✅ डिटेल्स मिल गईं!")
+                        st.write(f"**Enrollment No:** {match.iloc[0]['Enrollment']}")
+                        st.write(f"**Roll No:** {match.iloc[0]['RollNo']}")
+                    else:
+                        st.error("❌ नाम या मोबाइल नंबर मैच नहीं हुआ। कृपया सही डिटेल्स डालें।")
+                except FileNotFoundError:
+                    st.warning("⚠️ स्टूडेंट्स का डेटा अभी अपलोड नहीं हुआ है।")
+            else:
+                st.warning("कृपया अपना नाम और मोबाइल नंबर दोनों डालें।")
 
 # 4. API Key और मॉडल सेटअप
 API_KEY = st.secrets["GOOGLE_API_KEY"]
