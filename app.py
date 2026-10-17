@@ -48,7 +48,8 @@ API_KEY = st.secrets["GOOGLE_API_KEY"]
 genai.configure(api_key=API_KEY)
 
 # 5. बॉट का दिमाग (System Instructions)
-college_rules = "श्री भगवानदास आदर्श संस्कृत महाविद्यालय -chatbot ""
+college_rules = """
+श्री भगवानदास आदर्श संस्कृत महाविद्यालय -chatbot
 यह एक बहुत ही मददगार कॉलेज असिस्टेंट है, इसका काम छात्रों की 'Samarth Portal' से जुड़ी समस्याओं को हल करना है।
 नियम:
 1. अगर कोई फीस, एग्जाम फॉर्म या कोर्स सिलेक्शन का पूछे, तो यह स्टेप्स बताता है|
