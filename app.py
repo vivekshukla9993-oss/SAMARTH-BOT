@@ -3,6 +3,7 @@ import pandas as pd
 import google.generativeai as genai
 import requests
 from streamlit_lottie import st_lottie
+import speech_recognition as sr
 
 # 1. पेज का सेटअप
 st.set_page_config(page_title="समर्थ पोर्टल हेल्पडेस्क", page_icon="🎓", layout="wide")
@@ -31,30 +32,26 @@ st.markdown("""
 
 st.divider()
 
-# Lottie Animation लोड करने का फंक्शन
 def load_lottieurl(url: str):
     r = requests.get(url)
     if r.status_code != 200:
         return None
     return r.json()
 
-# 5. TABS (अलग-अलग सेक्शन में बाँटना)
-# इससे सारा कंटेंट एक ही पेज पर खिचड़ी नहीं बनेगा
+# 5. TABS (अलग-अलग सेक्शन)
 tab1, tab2, tab3 = st.tabs(["💬 AI चैट असिस्टेंट", "📢 सूचना एवं ट्यूटोरियल", "🔍 एनरोलमेंट सर्च"])
 
-# --- TAB 1: AI CHATBOT ---
+# --- TAB 1: AI CHATBOT (Voice Input ke sath) ---
 with tab1:
     col1, col2 = st.columns([1, 4])
     with col1:
-        # Lottie Animation (नमस्ते करता हुआ रोबोट)
         lottie_robot = load_lottieurl("https://lottie.host/78f2ec67-36e2-43d9-9ec6-8ddaa241f3ee/bI70G7fD35.json")
         if lottie_robot:
             st_lottie(lottie_robot, height=150, key="robot")
     with col2:
         st.subheader("आपका स्मार्ट AI दोस्त")
-        st.write("समर्थ पोर्टल या कॉलेज से जुड़ी कोई भी समस्या यहाँ पूछें।")
+        st.write("समर्थ पोर्टल या कॉलेज से जुड़ी कोई भी समस्या यहाँ टाइप करके या बोलकर पूछें।")
 
-    # API और बॉट का सेटअप
     API_KEY = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=API_KEY)
     
@@ -64,20 +61,46 @@ with tab1:
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = model.start_chat(history=[])
 
+    # Purani chat dikhana
     for message in st.session_state.chat_history.history:
         role = "user" if message.role == "user" else "assistant"
         with st.chat_message(role):
             st.markdown(message.parts[0].text)
 
+    # Inupt ke 2 tarike: Text aur Audio
+    final_input = None
+    
+    # 1. Type karne wala box
     user_input = st.chat_input("अपना सवाल यहाँ टाइप करें...")
+    
+    # 2. Bolne wala Mic button
+    st.write("---")
+    audio_value = st.audio_input("या माइक दबाकर बोलकर पूछें 🎙️")
 
+    # Faisla karna ki student ne type kiya hai ya bola hai
     if user_input:
+        final_input = user_input
+    elif audio_value:
+        r = sr.Recognizer()
+        with sr.AudioFile(audio_value) as source:
+            audio_data = r.record(source)
+            try:
+                with st.spinner("आपकी आवाज़ को समझ रहा हूँ..."):
+                    # Aawaz ko Hindi/English text mein badalna
+                    final_input = r.recognize_google(audio_data, language="hi-IN")
+            except sr.UnknownValueError:
+                st.error("माफ़ करें, मैं आवाज़ साफ़ नहीं सुन पाया। कृपया दोबारा बोलें या सवाल टाइप करें।")
+            except Exception as e:
+                st.error("Voice Error: " + str(e))
+
+    # Sawal ko Gemini Bot ke paas bhejna
+    if final_input:
         with st.chat_message("user"):
-            st.markdown(user_input)
+            st.markdown(final_input)
         with st.chat_message("assistant"):
             with st.spinner("जानकारी ढूँढ रहा हूँ..."):
                 try:
-                    response = st.session_state.chat_history.send_message(user_input)
+                    response = st.session_state.chat_history.send_message(final_input)
                     st.markdown(response.text)
                 except Exception as e:
                     st.warning("⚠️ सर्वर व्यस्त है। कृपया 10 सेकंड बाद दोबारा पूछें।")
@@ -85,7 +108,6 @@ with tab1:
 # --- TAB 2: NOTICE BOARD ---
 with tab2:
     st.subheader("📢 आवश्यक सूचना बोर्ड")
-    st.image("https://cdn-icons-png.flaticon.com/512/8074/8074804.png", width=100) # यहाँ आप अपने लेटरपैड की फोटो भी लगा सकते हैं 'notic.jpg' नाम से
     st.write("**विषय चयन हेतु प्राध्यापकों की सूची:**")
     st.markdown("""
     * **व्याकरण:** डॉ. श्री ओम शर्मा जी / डॉ. शिवदेव आर्य
@@ -97,7 +119,7 @@ with tab2:
     st.subheader("🌐 महत्वपूर्ण लिंक")
     st.markdown("[👉 समर्थ पोर्टल लॉगिन के लिए यहाँ क्लिक करें](https://samarth.edu.in/)")
     st.subheader("📺 ट्यूटोरियल वीडियो")
-    st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ") # अपना वीडियो लिंक डालें
+    st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
 
 # --- TAB 3: STUDENT SEARCH ---
 with tab3:
