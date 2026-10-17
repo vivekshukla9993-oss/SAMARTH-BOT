@@ -1,49 +1,51 @@
 import streamlit as st
-import google.generativeai as genai
 import pandas as pd
-# 1. पेज का सेटअप और थीम
-st.set_page_config(page_title="कॉलेज हेल्पडेस्क", page_icon="🎓", layout="wide")
+import google.generativeai as genai
 
-# 2. कस्टम डिज़ाइन और कलर (CSS) - आप यहाँ कलर बदल सकते हैं
+# पेज का सेटअप
+st.set_page_config(page_title="समर्थ पोर्टल हेल्पडेस्क", page_icon="🎓", layout="wide")
+
+# कस्टम डिज़ाइन (CSS)
 st.markdown("""
 <style>
-    /* बैकग्राउंड का रंग (हल्का नीला) */
-    .stApp {
-        background-color: #1cc94a; 
-    }
-    /* हेडिंग का रंग (गहरा नीला) */
-    h1, h2, h3 {
-        color: #000080; 
-    }
+    .stApp { background-color: #f8fcfd; }
+    .letterhead-hi { color: #b30000; text-align: center; font-family: 'Sanskrit Text', serif; font-size: 32px; font-weight: bold; margin-bottom: 0px;}
+    .letterhead-en { color: #000080; text-align: center; font-size: 20px; font-weight: bold; margin-top: 0px;}
+    .subtitle { text-align: center; color: #4b4b4b; font-size: 18px; margin-bottom: 20px;}
 </style>
 """, unsafe_allow_html=True)
 
-# 3. बायीं तरफ का साइडबार (Logo, Links, Notices, Video)
+# मुख्य लेटरहेड हेडिंग
+st.markdown("<div class='letterhead-hi'>श्री भगवानदास आदर्श संस्कृत महाविद्यालय</div>", unsafe_allow_html=True)
+st.markdown("<div class='letterhead-en'>Shri Bhagwandas Adarsh Sanskrit Mahavidyalaya</div>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle'>🎓 समर्थ पोर्टल एवं AI हेल्पडेस्क</div>", unsafe_allow_html=True)
+st.divider()
+
+# बायीं तरफ का साइडबार
 with st.sidebar:
-    # कॉलेज का लोगो (यहाँ अपने लोगो का वेब लिंक डालें)
-    st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTajyaMtBCOPtpQt4MXPMbhAfstcgeh6F5ALRF_YKRF_w&s=10", width=150)
+    st.image("https://cdn-icons-png.flaticon.com/512/8074/8074804.png", width=150)
     
-    st.title("📌 ज़रूरी जानकारी")
+    # आवश्यक सूचना (नई अपडेटेड)
+    st.error("📢 आवश्यक सूचना (09-10-2026)")
+    st.write("**विषय चयन, समर्थ पोर्टल आई.डी. और ABC आई.डी.** के लिए छात्र अपने विषय अनुसार निम्नलिखित प्राध्यापकों से संपर्क करें:")
     
-    # समर्थ पोर्टल का लिंक
-    st.subheader("🌐 पोर्टल लिंक")
-    st.markdown("[👉 यहाँ क्लिक करके समर्थ पोर्टल खोलें](https://sanskrit.samarth.edu.in/index.php/abc/app/index)")
+    with st.expander("👨‍🏫 प्राध्यापकों की सूची देखें"):
+        st.markdown("""
+        * **व्याकरण:** डॉ. श्री ओम शर्मा जी / डॉ. शिवदेव आर्य
+        * **साहित्य:** डॉ. अङ्कुर कुमार आर्य
+        * **दर्शन:** डॉ. सचिन द्विवेदी
+        * **ज्योतिष:** डॉ. श्रीकृष्णचन्द्र शर्मा
+        * **वेदान्त:** डॉ. तरुण डोभाल
+        """)
     
-    # नोटिस बोर्ड
-    st.subheader("📢 नोटिस बोर्ड")
-    st.info("""
-    **एग्जाम फॉर्म:** 15 अक्टू. - 30 अक्टू.\n
-    **टाइम टेबल:** 5 नवंबर को आएगा\n
-    **एडमिट कार्ड:** 10 नवंबर से डाउनलोड करें
-    """)
+    st.subheader("🌐 महत्वपूर्ण लिंक")
+    st.markdown("[👉 समर्थ पोर्टल लॉगिन](https://samarth.edu.in/)")
     
-    # वीडियो ट्यूटोरियल
     st.subheader("📺 ट्यूटोरियल वीडियो")
-    st.write("फीस कैसे भरें? नीचे वीडियो देखें:")
-    # यहाँ अपने YouTube या स्क्रीन रिकॉर्डिंग का लिंक डालें
-    st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ") 
-    # for enrollement number
-    st.subheader("🔍 अपना Enrollment/Roll No. जानें")
+    st.video("https://www.youtube.com/watch?v=dQw4w9WgXcQ") # अपना लिंक डालें
+    
+    # Enrollment Search Box
+    st.subheader("🔍 अपना Enrollment No. जानें")
     with st.expander("यहाँ क्लिक करें"):
         student_name = st.text_input("अपना पूरा नाम लिखें:")
         student_mobile = st.text_input("अपना मोबाइल नंबर डालें:")
@@ -51,13 +53,8 @@ with st.sidebar:
         if st.button("सर्च करें"):
             if student_name and student_mobile:
                 try:
-                    # CSV file ko padhna
                     df = pd.read_csv("students.csv")
-                    
-                    # Headings ke extra space hatana
                     df.columns = df.columns.str.strip()
-                    
-                    # Aapki list ki headings (NAME, MOBILE) ke anusar match karna
                     df['NAME'] = df['NAME'].astype(str).str.strip().str.lower()
                     df['MOBILE'] = df['MOBILE'].astype(str).str.split('.').str[0].str.strip()
                     
@@ -66,46 +63,37 @@ with st.sidebar:
                     
                     if not match.empty:
                         st.success("✅ डिटेल्स मिल गईं!")
-                        # Aapki list mein ENROLMENT likha hai, wahi print karenge
                         st.write(f"**Enrollment No:** {match.iloc[0]['ENROLMENT']}")
                     else:
-                        st.error("❌ नाम या मोबाइल नंबर मैच नहीं हुआ। कृपया सही डिटेल्स डालें।")  
-                except FileNotFoundError:
-                    st.warning("⚠️ स्टूडेंट्स का डेटा अभी अपलोड नहीं हुआ है।")
+                        st.error("❌ नाम या मोबाइल नंबर मैच नहीं हुआ।")
+                except Exception as e:
+                    st.warning("⚠️ स्टूडेंट्स का डेटा अभी उपलब्ध नहीं है।")
             else:
-                st.warning("कृपया अपना नाम और मोबाइल नंबर दोनों डालें।")
+                st.warning("कृपया डिटेल्स भरें।")
 
-# 4. API Key और मॉडल सेटअप
+# API और बॉट का सेटअप
 API_KEY = st.secrets["GOOGLE_API_KEY"]
 genai.configure(api_key=API_KEY)
 
-# 5. बॉट का दिमाग (System Instructions)
+# बॉट को नए नोटिस की जानकारी देना
 college_rules = """
-श्री भगवानदास आदर्श संस्कृत महाविद्यालय -chatbot
-यह एक बहुत ही मददगार कॉलेज असिस्टेंट है, इसका काम छात्रों की 'Samarth Portal' से जुड़ी समस्याओं को हल करना है।
+तुम श्री भगवानदास आदर्श संस्कृत महाविद्यालय के हेल्पडेस्क बॉट हो।
 नियम:
-1. अगर कोई फीस, एग्जाम फॉर्म या कोर्स सिलेक्शन का पूछे, तो यह स्टेप्स बताता है|
-2. छात्रों को यह भी बताता है कि "ज़रूरी लिंक्स, आखिरी तारीखें और मदद के लिए वीडियो बायीं तरफ (Sidebar) में दिए गए हैं, आप उन्हें देख सकते हैं।"
-3.
+1. अगर छात्र विषय चयन, समर्थ पोर्टल ID या ABC ID के बारे में पूछे, तो उन्हें बताओ कि वे अपने विषय के अनुसार इन प्राध्यापकों से मिलें: व्याकरण के लिए डॉ. ओम शर्मा या डॉ. शिवदेव आर्य, साहित्य के लिए डॉ. अङ्कुर कुमार आर्य, दर्शन के लिए डॉ. सचिन द्विवेदी, ज्योतिष के लिए डॉ. श्रीकृष्णचन्द्र शर्मा, और वेदान्त के लिए डॉ. तरुण डोभाल।
+2. जवाब हमेशा पॉइंट्स में और आसान हिंदी में दो।
 """
 
-model = genai.GenerativeModel('gemini-3.8-flash', system_instruction=college_rules)
+model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=college_rules)
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = model.start_chat(history=[])
 
-# 6. मुख्य चैट स्क्रीन
-st.title("🎓 Shri Bhagwandas Adarsh Sanskrit Mahavidyalaya - समर्थ पोर्टल हेल्पर")
-st.caption("पोर्टल से जुड़ी कोई भी समस्या यहाँ पूछें 👇")
-st.divider()
-
-# पुरानी चैट दिखाना
+# चैट इंटरफ़ेस
 for message in st.session_state.chat_history.history:
     role = "user" if message.role == "user" else "assistant"
     with st.chat_message(role):
         st.markdown(message.parts[0].text)
 
-# नया सवाल पूछना
 user_input = st.chat_input("अपना सवाल यहाँ टाइप करें...")
 
 if user_input:
@@ -118,4 +106,7 @@ if user_input:
                 response = st.session_state.chat_history.send_message(user_input)
                 st.markdown(response.text)
             except Exception as e:
-                st.error(f"कुछ गड़बड़ हुई: {e}")
+                st.warning("⚠️ सर्वर व्यस्त है। कृपया 10 सेकंड बाद दोबारा पूछें।")
+
+# सबसे नीचे आपका नाम (Footer)
+st.markdown("<br><hr><center><b>💻 CHAT BOT DESIGNED BY VIVEK SHUKLA (COMPUTER INSTRUCTOR)</b></center>", unsafe_allow_html=True)
