@@ -9,7 +9,7 @@ st.markdown("""
 <style>
     /* बैकग्राउंड का रंग (हल्का नीला) */
     .stApp {
-        background-color: #f0f8ff; 
+        background-color: #1cc94a; 
     }
     /* हेडिंग का रंग (गहरा नीला) */
     h1, h2, h3 {
