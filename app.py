@@ -52,24 +52,24 @@ with st.sidebar:
             if student_name and student_mobile:
                 try:
                     # CSV file ko padhna
-                    df = pd.read_csv("students.csv")
-                   
-                    # Heaadings ke aas-paas ke extra spaces ko hatane ke liye yeh nayi line jodein:
-                    df.columns = df.columns.str.strip() 
-                                       
-                    # Naam aur Mobile match karna (chote-bade aksharon ka dhyan na rakhte hue)
-                    df['Name'] = df['Name'].astype(str).str.strip().str.lower()
-                    df['Mobile'] = df['Mobile'].astype(str).str.strip()
+                   df = pd.read_csv("students.csv")
                     
-                    match = df[(df['Name'] == student_name.strip().lower()) & 
-                               (df['Mobile'] == student_mobile.strip())]
+                    # Headings ke extra space hatana
+                    df.columns = df.columns.str.strip()
+                    
+                    # Aapki list ki headings (NAME, MOBILE) ke anusar match karna
+                    df['NAME'] = df['NAME'].astype(str).str.strip().str.lower()
+                    df['MOBILE'] = df['MOBILE'].astype(str).str.strip()
+                    
+                    match = df[(df['NAME'] == student_name.strip().lower()) & 
+                               (df['MOBILE'] == student_mobile.strip())]
                     
                     if not match.empty:
                         st.success("✅ डिटेल्स मिल गईं!")
-                        st.write(f"**Enrollment No:** {match.iloc[0]['Enrollment']}")
-                        st.write(f"**Roll No:** {match.iloc[0]['RollNo']}")
+                        # Aapki list mein ENROLMENT likha hai, wahi print karenge
+                        st.write(f"**Enrollment No:** {match.iloc[0]['ENROLMENT']}")
                     else:
-                        st.error("❌ नाम या मोबाइल नंबर मैच नहीं हुआ। कृपया सही डिटेल्स डालें।")
+                        st.error("❌ नाम या मोबाइल नंबर मैच नहीं हुआ। कृपया सही डिटेल्स डालें।")  
                 except FileNotFoundError:
                     st.warning("⚠️ स्टूडेंट्स का डेटा अभी अपलोड नहीं हुआ है।")
             else:
